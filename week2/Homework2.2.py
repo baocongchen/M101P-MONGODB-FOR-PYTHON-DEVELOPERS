@@ -28,15 +28,20 @@
 #> db.grades.aggregate({'$group':{'_id':'$student_id', 'average':{$avg:'$score'}}}, {'$sort':{'average':-1}}, {'$limit':1})
 #Enter the student ID below. Please enter just the number, with no spaces, commas or other characters.
 import pymongo
-import sys
 connection = pymongo.MongoClient("mongodb://localhost", safe=True)
 db = connection.students
 grades = db.grades
-
 def removeHomework():
-    print "Removing Homework"
+    print "Removing homework with lowest score"
     
-    try:
-        grades.find().sort('score':1).limit(1)remove({'score':'type': 'homework'})
+    #~ minvalue = grades.find({'type':'homework'},{'score':1,'_id':0})
+    selected = grades.find({'type': 'homework'}).sort([('student_id',1),('score',1)])
+    n = 0
+    for collection in selected:
+		print collection
+		if n%2==0:
+			id = collection['_id']
+			grades.remove({'_id': id})
+		n+=1
 
 removeHomework()
